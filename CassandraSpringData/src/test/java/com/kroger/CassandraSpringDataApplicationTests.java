@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.junit.Before;
@@ -17,8 +16,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.kroger.Response.UserResponse;
 import com.kroger.controller.KrogerController;
+import com.kroger.model.Products;
 import com.kroger.model.User;
+import com.kroger.repository.KrogerProdRepo;
 import com.kroger.service.KrogerService;
 
 @RunWith(SpringRunner.class)
@@ -26,16 +28,24 @@ import com.kroger.service.KrogerService;
 public class CassandraSpringDataApplicationTests {
 
 	
-	//@InjectMocks
 	@Autowired
 	KrogerController krogerController;
 	
-	//@MockBean
-	@Autowired
+	@InjectMocks
 	KrogerService krogerService;
+	
+	@MockBean
+	KrogerProdRepo krogerProdRepo;
+	
+	@Autowired
+	Products products;
 	
 	@Autowired
 	User user;
+	
+	@Autowired
+	User userres;
+	
 	
 	@Before
 	public void setup(){
@@ -51,48 +61,67 @@ public class CassandraSpringDataApplicationTests {
 		user.setUser_id("U6");
 	}
 	
+	@Before
+	public void prodSetUp() {
+		
+		products.setProd_id("M3");
+		products.setProd_desc("IphoneXe");
+		products.setProdname("Mobile");
+		products.setProd_price(20000);
+	}
+	
 	@Test
 	public void findByUserIdTest() {
 		
-		Optional<User> userOptest=krogerController.findByUserId("U2");
-		User usertest=userOptest.get();
+		UserResponse userResponse =krogerController.findByUserId("U1");
 		
-		assertEquals(true,userOptest.isPresent());
-		assertEquals("Praveen",usertest.getFirst_name());
-		assertEquals("Non-Prime", usertest.getType());
+		assertEquals(0,userResponse.getStatus_code());
+		assertEquals("Successfull",userResponse.getStatus_msg());
+		
+		Optional<User> user=(Optional<User>) userResponse.getResponse();
+		assertEquals("Ajith",user.get().getFirst_name());
 	}
 	
 	@Test
-	public void SaveUserTest() {
+	public void saveUserTest() {
 		
-		krogerController.saveUser(user);
-		assertEquals("Rahul", krogerController.findByUserId("U6").get().getFirst_name());
+		UserResponse userResponse=krogerController.saveUser(user);
+		
+		assertEquals(0, userResponse.getStatus_code());
+		assertEquals("Successful", userResponse.getStatus_msg());
+		assertEquals("User id : U6 inserted successfully", userResponse.getResponse());
 	}
 	
-	@Test(expected = NoSuchElementException.class )
-	public void DeleteUserTest() {
+	@Test
+	public void deleteUserTest() {
 		
-		krogerController.deleteUser("U6");
-		assertEquals("Rahul", krogerController.findByUserId("U6").get().getFirst_name());
+		UserResponse userResponse =krogerController.deleteUser("U6");
+		assertEquals(0, userResponse.getStatus_code());
+		assertEquals("Successful", userResponse.getStatus_msg());
+		assertEquals("User id : U6 deleted successfully", userResponse.getResponse());
 		
 	}
 	
 	
+	  @Test 
+	  public void updateUserTest() {
+	  
+		  krogerController.saveUser(user); 
+		  UserResponse userResponse=krogerController.updateUser("U6","Non-Prime");
+		  assertEquals(0,userResponse.getStatus_code());
+		  assertEquals("Successful", userResponse.getStatus_msg());
+		  assertEquals("User id : U6 Updated successfully", userResponse.getResponse());
+	  
+	  }
+	 
 	
-	/*
-	 * KrogerService serviceMock = mock(KrogerService.class);
-	 * when(serviceMock.findByUserId("U2")).thenReturn(Optional.of(user));
-	 * Optional<User> userOptest=krogerController.findByUserId("U2"); User usertest
-	 * = userOptest.get();
-	 */
-
-	/*
-	 * @Autowired User user;
-	 * 
-	 * @Before public void setupUser() { user= new User(); user.setUser_id("U2");
-	 * user.setFirst_name("Praveen"); user.setLast_name("Neelamegam");
-	 * user.setType("Prime"); }
-	 */
-	
+	@Test
+	public void findByMockTest() {
+		krogerProdRepo = mock(KrogerProdRepo.class);
+		when(krogerProdRepo.findByProd_desc("IphoneXe")).thenReturn(products);
+		
+		assertEquals("Mobile",krogerProdRepo.findByProd_desc("IphoneXe").getProdname());
+		
+	}
 	
 }

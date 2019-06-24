@@ -7,6 +7,9 @@ import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 import org.springframework.stereotype.Component;
 
+import io.swagger.annotations.ApiModel;
+
+@ApiModel(description="User Entity Holds User Table Information")
 @Component
 @Table
 public class User implements Serializable  {
@@ -16,6 +19,7 @@ public class User implements Serializable  {
 	@PrimaryKey
 	@Column("user_id")
 	private String user_id;
+	
 	@Column("first_name")
 	private String first_name;
 	@Column("last_name")

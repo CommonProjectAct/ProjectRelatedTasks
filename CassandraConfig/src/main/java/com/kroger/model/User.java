@@ -1,13 +1,10 @@
 package com.kroger.model;
 
 import java.io.Serializable;
-
 import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 import org.springframework.stereotype.Component;
-
-import com.google.common.annotations.Beta;
 
 @Component
 @Table

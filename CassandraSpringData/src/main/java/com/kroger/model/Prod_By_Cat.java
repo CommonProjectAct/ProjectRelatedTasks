@@ -15,24 +15,24 @@ private static final long serialVersionUID = 1L;
 	
 	@PrimaryKeyColumn(name="cat_name",ordinal = 0,type = PrimaryKeyType.PARTITIONED)
 	@Column("cat_name")
-	private String cat_name;
+	private String catname;
 	
 	@PrimaryKeyColumn(name = "cat_id", ordinal = 1, type = PrimaryKeyType.CLUSTERED)
 	@Column("cat_id")
-	private String cat_id;
+	private String catid;
 	@Column("prod_list")
 	private Map<String,String> prod_list;
 	public String getCat_name() {
-		return cat_name;
+		return catname;
 	}
-	public void setCat_name(String cat_name) {
-		this.cat_name = cat_name;
+	public void setCat_name(String catname) {
+		this.catname = catname;
 	}
 	public String getCat_id() {
-		return cat_id;
+		return catid;
 	}
-	public void setCat_id(String cat_id) {
-		this.cat_id = cat_id;
+	public void setCat_id(String catid) {
+		this.catid = catid;
 	}
 	public Map<String, String> getProd_list() {
 		return prod_list;

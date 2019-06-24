@@ -7,15 +7,17 @@ import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.Indexed;
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
 import org.springframework.data.cassandra.core.mapping.Table;
-
+import org.springframework.stereotype.Component;
+@Component
 @Table
 public class Products implements Serializable{
 
 private static final long serialVersionUID = 1L;
 	
+	
 	@PrimaryKeyColumn(name="prod_name",ordinal = 0,type = PrimaryKeyType.PARTITIONED)
 	@Column("prod_name")
-	private String prod_name;
+	private String prodname;
 
 	@PrimaryKeyColumn(name = "prod_id", ordinal = 1, type = PrimaryKeyType.CLUSTERED)
 	@Column("prod_id")
@@ -24,12 +26,12 @@ private static final long serialVersionUID = 1L;
 	@Column("prod_desc")
 	private String prod_desc;
 
-	public String getProd_name() {
-		return prod_name;
+	public String getProdname() {
+		return prodname;
 	}
 
-	public void setProd_name(String prod_name) {
-		this.prod_name = prod_name;
+	public void setProdname(String prodname) {
+		this.prodname = prodname;
 	}
 
 	public String getProd_id() {
