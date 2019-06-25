@@ -2,8 +2,6 @@ package com.kroger.controller;
 
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,16 +11,19 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kroger.Response.UserResponse;
-import com.kroger.model.Prod_By_Cat;
+import com.kroger.model.ProdByCat;
 import com.kroger.model.Products;
 import com.kroger.model.User;
+import com.kroger.response.UserResponse;
 import com.kroger.service.KrogerService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
+@Slf4j
 public class KrogerController {
 	
-	private static final Logger logger = LogManager.getLogger(KrogerController.class);
+	
 	 
 	@Autowired
 	KrogerService krogerService;
@@ -30,65 +31,65 @@ public class KrogerController {
 	@GetMapping("/findalluser")
 	public UserResponse findAllUser() {
 		
-		logger.info("Inside of find all service");
-		UserResponse userResponse=krogerService.findAllUser();
-		return userResponse;
+		log.info("Inside of find all service");
+		return krogerService.findAllUser();
 	}
 	
-	@GetMapping("/finduserbyid/{uid}")
-	public UserResponse findByUserId(@PathVariable("uid") String user_id) {
+	@GetMapping("/finduserbyid/{userId}")
+	public UserResponse findByUserId(@PathVariable("userId") String userId) {
 		
-		logger.info("Insdie find by id service");
-		return krogerService.findByUserId(user_id);
+		log.info("Insdie find by id service");
+		return krogerService.findByUserId(userId);
+	}
+	
+	@GetMapping("/finduserbytype/{userType}")
+	public UserResponse findByUserType(@PathVariable("userType") String userType) {
+		
+		log.info("Insdie find by type service");
+		return krogerService.findByUserType(userType);
 	}
 	
 	 @PostMapping("/saveuser") 
 	 public UserResponse saveUser(@RequestBody User user) {
 		
-		 logger.info("Inside save user service"); 
+		 log.info("Inside save user service"); 
 		 return krogerService.saveUser(user); 
 	}
 	
 	 @DeleteMapping("/deleteuser/{id}") 
-	 public UserResponse deleteUser(@PathVariable("id") String user_id) { 
+	 public UserResponse deleteUser(@PathVariable("id") String userId) { 
 		
-		 logger.info("Inside delete by id service");
-		 return  krogerService.deleteUser(user_id); 
+		 log.info("Inside delete by id service");
+		 return  krogerService.deleteUser(userId); 
 	}
 	 
-	 @PutMapping("/updateuser/{user_id}/{type}")
-	 public UserResponse updateUser(@PathVariable("user_id") String user_id,@PathVariable("type") String type) {
+	 @PutMapping("/updateuser/{userId}/{type}")
+	 public UserResponse updateUser(@PathVariable("userId") String userId,@PathVariable("type") String type) {
 		 
-		 logger.info("Inside update user service");
-		 return krogerService.updateUser(user_id,type);
+		 log.info("Inside update user service");
+		 return krogerService.updateUser(userId,type);
 	 }
 	 
-	 @GetMapping("/findbyprod_desc/{prod_desc}")
-	 public Products findByProd_Desc(@PathVariable("prod_desc") String prod_desc){
+	 @GetMapping("/findbyprod_desc/{prodDesc}")
+	 public Products findByProdDesc(@PathVariable("prodDesc") String prodDesc){
 		 
-		 logger.info("Inside find by prodct description");
-		 return krogerService.findByProd_Desc(prod_desc);
+		 log.info("Inside find by prodct description");
+		 return krogerService.findByProdDesc(prodDesc);
 	 }	 
 	 
-	 @GetMapping("/findbycat/{catname}")
-	 public List<Prod_By_Cat> findByCatName(@PathVariable("catname") String catname) {
+	 @GetMapping("/findbycat/{catName}")
+	 public List<ProdByCat> findByCatName(@PathVariable("catName") String catName) {
 		
-		 logger.info("Inside find by cat name service");
-		return  krogerService.findByCatName(catname);
+		log.info("Inside find by cat name service");
+		return  krogerService.findByCatName(catName);
 	 }
 	 
-	 @GetMapping("/findbycatname_and_id/{catname}/{cid}")
-	 public Prod_By_Cat findByCatNameAndId(@PathVariable("catname") String catname,@PathVariable("cid") String cid) {
-			
-		 	logger.info("Inside find by cat name service");
-			return  krogerService.findByCatNameAndId(catname, cid);
-	}
 	
-	 @GetMapping("findbyprod/{pname}")
-	 public List<Products> findByProdName(@PathVariable("pname") String prod_name) {
+	 @GetMapping("findbyprod/{prodName}")
+	 public List<Products> findByProdName(@PathVariable("prodName") String prodName) {
 		
-		 logger.info("Inside find by prod name Service");
-		return krogerService.findByProdName(prod_name);
+		log.info("Inside find by prod name Service");
+		return krogerService.findByProdName(prodName);
 				
 	 }
 	

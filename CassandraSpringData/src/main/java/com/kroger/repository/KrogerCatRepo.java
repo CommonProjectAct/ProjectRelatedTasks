@@ -4,15 +4,20 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-import com.kroger.model.Prod_By_Cat;
+import com.kroger.model.ProdByCat;
 
-
-public interface KrogerCatRepo extends CrudRepository<Prod_By_Cat,Serializable> {
+@RepositoryRestResource
+public interface KrogerCatRepo extends CrudRepository<ProdByCat,Serializable> {
 	
-	public List<Prod_By_Cat> findByCatname(String catname);
+	public List<ProdByCat> findByCatName(String catName);
 	
-	public Prod_By_Cat findByCatnameAndCatid(String catname,String catid);
+	public ProdByCat findByCatNameAndCatId(String catName,String catId);
+	
+	public void deleteByCatName(String catName);
+	
+	public <S> S save(ProdByCat prodByCat);
 	
 
 }

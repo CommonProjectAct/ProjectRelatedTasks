@@ -8,10 +8,11 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.kroger.model.Products;
 
+
 public interface KrogerProdRepo extends CrudRepository<Products, Serializable> {
 	
-	public List<Products> findByProdname(String prodname);
+	public List<Products> findByProdName(String prodName);
 	
 	@Query("select * from products where prod_desc=:prod_desc")
-	public Products findByProd_desc(String prod_desc);
+	public Products findByProdDesc(String prodDesc);
 }

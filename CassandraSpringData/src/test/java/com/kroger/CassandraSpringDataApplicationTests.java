@@ -1,9 +1,11 @@
 package com.kroger;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.Before;
@@ -16,11 +18,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.kroger.Response.UserResponse;
 import com.kroger.controller.KrogerController;
 import com.kroger.model.Products;
 import com.kroger.model.User;
 import com.kroger.repository.KrogerProdRepo;
+import com.kroger.response.UserResponse;
 import com.kroger.service.KrogerService;
 
 @RunWith(SpringRunner.class)
@@ -55,19 +57,19 @@ public class CassandraSpringDataApplicationTests {
 	@Before
 	public void userSetUp() {
 		
-		user.setFirst_name("Rahul");
-		user.setLast_name("Kumar");
+		user.setFirstName("Rahul");
+		user.setLastName("Kumar");
 		user.setType("Prime");
-		user.setUser_id("U6");
+		user.setUserId("U6");
 	}
 	
 	@Before
 	public void prodSetUp() {
 		
-		products.setProd_id("M3");
-		products.setProd_desc("IphoneXe");
-		products.setProdname("Mobile");
-		products.setProd_price(20000);
+		products.setProdId("M3");
+		products.setProdDesc("IphoneXe");
+		products.setProdName("Mobile");
+		products.setProdPrice(20000);
 	}
 	
 	@Test
@@ -75,11 +77,16 @@ public class CassandraSpringDataApplicationTests {
 		
 		UserResponse userResponse =krogerController.findByUserId("U1");
 		
-		assertEquals(0,userResponse.getStatus_code());
-		assertEquals("Successfull",userResponse.getStatus_msg());
+		assertEquals(0,userResponse.getStatusCode());
+		assertEquals("Successful",userResponse.getStatusMsg());
 		
 		Optional<User> user=(Optional<User>) userResponse.getResponse();
-		assertEquals("Ajith",user.get().getFirst_name());
+		assertEquals("Ajith",user.get().getFirstName());
+		
+		UserResponse userResponseRes =krogerController.findByUserId("U100");
+		
+		assertEquals(404,userResponseRes.getStatusCode());
+		assertEquals("Not Found",userResponseRes.getStatusMsg());
 	}
 	
 	@Test
@@ -87,8 +94,8 @@ public class CassandraSpringDataApplicationTests {
 		
 		UserResponse userResponse=krogerController.saveUser(user);
 		
-		assertEquals(0, userResponse.getStatus_code());
-		assertEquals("Successful", userResponse.getStatus_msg());
+		assertEquals(0, userResponse.getStatusCode());
+		assertEquals("Successful", userResponse.getStatusMsg());
 		assertEquals("User id : U6 inserted successfully", userResponse.getResponse());
 	}
 	
@@ -96,9 +103,14 @@ public class CassandraSpringDataApplicationTests {
 	public void deleteUserTest() {
 		
 		UserResponse userResponse =krogerController.deleteUser("U6");
-		assertEquals(0, userResponse.getStatus_code());
-		assertEquals("Successful", userResponse.getStatus_msg());
+		assertEquals(0, userResponse.getStatusCode());
+		assertEquals("Successful", userResponse.getStatusMsg());
 		assertEquals("User id : U6 deleted successfully", userResponse.getResponse());
+		
+		UserResponse userResponseRes =krogerController.deleteUser("U600");
+		assertEquals(404, userResponseRes.getStatusCode());
+		assertEquals("Not Found", userResponseRes.getStatusMsg());
+		assertEquals("User id : U600 Not Exist", userResponseRes.getResponse());
 		
 	}
 	
@@ -108,19 +120,34 @@ public class CassandraSpringDataApplicationTests {
 	  
 		  krogerController.saveUser(user); 
 		  UserResponse userResponse=krogerController.updateUser("U6","Non-Prime");
-		  assertEquals(0,userResponse.getStatus_code());
-		  assertEquals("Successful", userResponse.getStatus_msg());
+		  assertEquals(0,userResponse.getStatusCode());
+		  assertEquals("Successful", userResponse.getStatusMsg());
 		  assertEquals("User id : U6 Updated successfully", userResponse.getResponse());
+		  
+		  UserResponse userResponseRes =krogerController.deleteUser("U600");
+			assertEquals(404, userResponseRes.getStatusCode());
+			assertEquals("Not Found", userResponseRes.getStatusMsg());
+			assertEquals("User id : U600 Not Exist", userResponseRes.getResponse());
 	  
 	  }
+	  
+	  @Test
+	  public void findAllUserTest() {
+		 UserResponse userResponse= krogerController.findAllUser();
+		 
+		 assertEquals(0, userResponse.getStatusCode());
+		 assertEquals("Successful", userResponse.getStatusMsg());
+		 assertNotNull(userResponse.getResponse());
+	  }
+	  
 	 
 	
 	@Test
 	public void findByMockTest() {
 		krogerProdRepo = mock(KrogerProdRepo.class);
-		when(krogerProdRepo.findByProd_desc("IphoneXe")).thenReturn(products);
+		when(krogerProdRepo.findByProdDesc("IphoneXe")).thenReturn(products);
 		
-		assertEquals("Mobile",krogerProdRepo.findByProd_desc("IphoneXe").getProdname());
+		assertEquals("Mobile",krogerProdRepo.findByProdDesc("IphoneXe").getProdName());
 		
 	}
 	

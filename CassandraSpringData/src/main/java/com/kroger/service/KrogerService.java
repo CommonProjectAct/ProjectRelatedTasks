@@ -8,14 +8,14 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.kroger.Response.UserResponse;
 import com.kroger.exceptions.UserNotFoundException;
-import com.kroger.model.Prod_By_Cat;
+import com.kroger.model.ProdByCat;
 import com.kroger.model.Products;
 import com.kroger.model.User;
 import com.kroger.repository.KrogerCatRepo;
 import com.kroger.repository.KrogerProdRepo;
 import com.kroger.repository.KrogerUserRepo;
+import com.kroger.response.UserResponse;
 
 @Service
 public class KrogerService {
@@ -33,33 +33,53 @@ public class KrogerService {
 	@Autowired 
 	UserResponse userResponse;
 	
+	private static final String SUCCESSMSG="Successful"; 
+	private static final String NOTFOUNDMSG="Not Found"; 
+	
 	public UserResponse findAllUser() {
 		logger.info("Inside find all service");
 		try{
-			userResponse.setStatus_code(0);
-			userResponse.setStatus_msg("Successful");
+			userResponse.setStatusCode(0);
+			userResponse.setStatusMsg(SUCCESSMSG);
 			userResponse.setResponse(krogerUserRepo.findAll());
 		}catch(Exception e) {
-				userResponse.setStatus_code(404);
-				userResponse.setStatus_msg("Not found");
+				userResponse.setStatusCode(404);
+				userResponse.setStatusMsg(NOTFOUNDMSG);
 				userResponse.setResponse(new UserNotFoundException("Users not found"));
 			}
 		
 		return userResponse;
 	}
 	
-	public UserResponse findByUserId(String user_id) {
+	public UserResponse findByUserId(String userId) {
 		
 		logger.info("Insdie find by id service");
 		
-		Optional<User> user=krogerUserRepo.findById(user_id);
+		Optional<User> user=krogerUserRepo.findById(userId);
 		if(!user.isPresent()) {
-			userResponse.setStatus_code(404);
-			userResponse.setStatus_msg("Not found");
-			userResponse.setResponse(new UserNotFoundException("User Not found for id : "+user_id));
+			userResponse.setStatusCode(404);
+			userResponse.setStatusMsg(NOTFOUNDMSG);
+			userResponse.setResponse(new UserNotFoundException("User Not found for id : "+userId));
 		}else {
-				userResponse.setStatus_code(00);
-				userResponse.setStatus_msg("Successfull");
+				userResponse.setStatusCode(00);
+				userResponse.setStatusMsg(SUCCESSMSG);
+				userResponse.setResponse(user);
+		}
+		return userResponse;
+	}
+	
+	public UserResponse findByUserType(String userType) {
+		
+		logger.info("Insdie find by Type service");
+		
+		List<User> user=krogerUserRepo.findUserByType(userType);
+		if(user.isEmpty()) {
+			userResponse.setStatusCode(404);
+			userResponse.setStatusMsg(NOTFOUNDMSG);
+			userResponse.setResponse(new UserNotFoundException("User Not found for type: "+userType));
+		}else {
+				userResponse.setStatusCode(00);
+				userResponse.setStatusMsg(SUCCESSMSG);
 				userResponse.setResponse(user);
 		}
 		return userResponse;
@@ -70,86 +90,85 @@ public class KrogerService {
 		 try{
 			 
 			 krogerUserRepo.save(user);
-			 userResponse.setStatus_code(0);
-			 userResponse.setStatus_msg("Successful");
-			 userResponse.setResponse("User id : "+ user.getUser_id() +" inserted successfully");
+			 userResponse.setStatusCode(0);
+			 userResponse.setStatusMsg(SUCCESSMSG);
+			 userResponse.setResponse("User id : "+ user.getUserId() +" inserted successfully");
 		 }
 		 catch (Exception e) {
-			 	logger.info("Exception Caught is "+ e);
-			 	userResponse.setStatus_code(404);
-			 	userResponse.setStatus_msg("Not found");
-			 	userResponse.setResponse("User id : "+user.getUser_id() + " is not saved successfully");
+			 	userResponse.setStatusCode(404);
+			 	userResponse.setStatusMsg(NOTFOUNDMSG);
+			 	userResponse.setResponse("User id : "+user.getUserId() + " is not saved successfully due to exception");
 		 }
 		 
 		 return userResponse;
 		
 	}
 	  
-	public UserResponse deleteUser(String user_id) { 
+	public UserResponse deleteUser(String userId) { 
 		  logger.info("Inside delete by id service");
 		  
-			 if(krogerUserRepo.existsById(user_id)) {
+			 if(krogerUserRepo.existsById(userId)) {
 				 try {
-					   krogerUserRepo.deleteById(user_id);
-					   userResponse.setStatus_code(0);
-					   userResponse.setStatus_msg("Successful");
-					   userResponse.setResponse("User id : "+user_id +" deleted successfully");
+					   krogerUserRepo.deleteById(userId);
+					   userResponse.setStatusCode(0);
+					   userResponse.setStatusMsg(SUCCESSMSG);
+					   userResponse.setResponse("User id : "+userId +" deleted successfully");
 				 	}catch (Exception e) {
 				 			logger.info("Exception Caught is "+ e);
-				 			userResponse.setStatus_code(403);
-				 			userResponse.setStatus_msg("Forbidden");
-				 			userResponse.setResponse(new UserNotFoundException("User id : "+user_id + " is not deleted"));
+				 			userResponse.setStatusCode(403);
+				 			userResponse.setStatusMsg("Forbidden");
+				 			userResponse.setResponse("User id : "+userId + " is not deleted due to exception");
 				 	 }
 			 }else {
-				 userResponse.setStatus_code(404);
-				 userResponse.setStatus_msg("Not found");
-				 userResponse.setResponse("User id : "+user_id+" Not Exist");
+				 userResponse.setStatusCode(404);
+				 userResponse.setStatusMsg(NOTFOUNDMSG);
+				 userResponse.setResponse("User id : "+userId+" Not Exist");
 			 }
 		return userResponse;
 	}
 	
-	public UserResponse updateUser(String user_id,String type) {
+	public UserResponse updateUser(String userId,String type) {
 		logger.info("Inside update User type by id");
-		 if(krogerUserRepo.existsById(user_id)) {
+		 if(krogerUserRepo.existsById(userId)) {
 			 try {
-				 krogerUserRepo.updateUserTypeById(type, user_id);
-				 userResponse.setStatus_code(0);
-				 userResponse.setStatus_msg("Successful");
-				 userResponse.setResponse("User id : "+ user_id +" Updated successfully");
+				 krogerUserRepo.updateUserTypeById(type, userId);
+				 userResponse.setStatusCode(0);
+				 userResponse.setStatusMsg(SUCCESSMSG);
+				 userResponse.setResponse("User id : "+ userId +" Updated successfully");
 			 	}catch (Exception e) {
 			 		logger.info("Exception Caught is "+ e);
-			 		userResponse.setStatus_code(403);
-			 		userResponse.setStatus_msg("Exception occured");
-			 		userResponse.setResponse(new UserNotFoundException("User id : "+user_id + " is not updated "));
+			 		userResponse.setStatusCode(403);
+			 		userResponse.setStatusMsg("Exception occured");
+			 		userResponse.setResponse(new UserNotFoundException("User id : "+userId + " is not updated "));
 			 	}
 		 }else {
-				 userResponse.setStatus_code(404);
-				 userResponse.setStatus_msg("Not found");
-				 userResponse.setResponse("User id : "+user_id+" Not Exist");
+				 userResponse.setStatusCode(404);
+				 userResponse.setStatusMsg(NOTFOUNDMSG);
+				 userResponse.setResponse("User id : "+userId+" Not Exist");
 		}
 			
 		return userResponse;
 	}
 	
-	public List<Prod_By_Cat> findByCatName(String cat_name) {
+	public List<ProdByCat> findByCatName(String catName) {
 		logger.info("Inside find by cat name service");
-		return  krogerCatRepo.findByCatname(cat_name);
+		return  krogerCatRepo.findByCatName(catName);
 	}
 	
-	public Prod_By_Cat findByCatNameAndId(String cat_name,String cat_id) {
+	public ProdByCat findByCatNameAndId(String catName,String catId) {
 		logger.info("Inside find by cat name service");
-		return  krogerCatRepo.findByCatnameAndCatid(cat_name,cat_id);
+		return  krogerCatRepo.findByCatNameAndCatId(catName,catId);
 	}
 	
-	public List<Products> findByProdName(String prod_name) {
+	public List<Products> findByProdName(String prodName) {
 		logger.info("Inside find by prod name Service");
-		return krogerProdRepo.findByProdname(prod_name);
+		return krogerProdRepo.findByProdName(prodName);
 				
 	}
 	
-	public Products findByProd_Desc(String prod_desc){
+	public Products findByProdDesc(String prodDesc){
 		 logger.info("Inside find by price service");
-		 return krogerProdRepo.findByProd_desc(prod_desc);
+		 return krogerProdRepo.findByProdDesc(prodDesc);
 	}
 	
 }
