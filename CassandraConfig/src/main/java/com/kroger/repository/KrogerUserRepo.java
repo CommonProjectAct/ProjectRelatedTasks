@@ -54,6 +54,7 @@ public class KrogerUserRepo  {
 		}catch(Exception e) {
 			userResponse.setStatusCode(404);
 			userResponse.setStatusMsg("Exception Occcured");
+			userResponse.setResponse("Exception Occcured for user id:"+user.getUserId());
 		}
 		
 		 return userResponse;
@@ -74,10 +75,12 @@ public class KrogerUserRepo  {
 		 }else {
 			 userResponse.setStatusCode(404);
 		 	 userResponse.setStatusMsg("Deleteion in Failed");
+		 	 userResponse.setResponse("Deletion of userd id :"+userId+"+Failed");
 		 }
 		}catch(Exception e) {
 			userResponse.setStatusCode(404);
 			userResponse.setStatusMsg("Exception Occcured");
+			userResponse.setResponse("Deletion of userd id :"+userId+"+Failed");
 		}
 		return userResponse;
 
@@ -94,13 +97,16 @@ public class KrogerUserRepo  {
 		 if(res.wasApplied()) {
 			 userResponse.setStatusCode(0);
 			 userResponse.setStatusMsg("Insertion is Successful");
+			 userResponse.setResponse("Insertion Successful for user id:"+user.getUserId());
 		 }else {
 			 userResponse.setStatusCode(404);
 		 	 userResponse.setStatusMsg("Insertion Failed");
+		 	userResponse.setResponse("Insertion failed for user id:"+user.getUserId());
 		 }
 		}catch(Exception e) {
 		userResponse.setStatusCode(404);
 		userResponse.setStatusMsg("Exception Occcured");
+		userResponse.setResponse("Insertion failed for user id:"+user.getUserId());
 		}
 		return userResponse;
 	 }
@@ -117,13 +123,16 @@ public class KrogerUserRepo  {
 		 if(res.wasApplied()) {
 			 userResponse.setStatusCode(0);
 			 userResponse.setStatusMsg("Update is Successful");
+			 userResponse.setResponse("User id :"+userId+" updated successfully");
 		 }else {
 			 userResponse.setStatusCode(404);
 		 	 userResponse.setStatusMsg("Update is UnSuccessful");
+		 	 userResponse.setResponse("User id :"+userId+" updation failed");
 		 }
 		 }catch(Exception e) {
 			 userResponse.setStatusCode(404);
 				userResponse.setStatusMsg("Exception Occcured");
+				userResponse.setResponse("User id :"+userId+" updation failed");
 		}
 		return userResponse;
 	 }
