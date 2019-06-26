@@ -3,8 +3,6 @@ package com.kroger.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +15,11 @@ import com.kroger.repository.KrogerProdRepo;
 import com.kroger.repository.KrogerUserRepo;
 import com.kroger.response.UserResponse;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class KrogerService {
-	private static final Logger logger = LogManager.getLogger(KrogerService.class);
 	
 	@Autowired
 	KrogerUserRepo krogerUserRepo;
@@ -37,7 +37,7 @@ public class KrogerService {
 	private static final String NOTFOUNDMSG="Not Found"; 
 	
 	public UserResponse findAllUser() {
-		logger.info("Inside find all service");
+		log.info("Inside find all service");
 		try{
 			userResponse.setStatusCode(0);
 			userResponse.setStatusMsg(SUCCESSMSG);
@@ -53,7 +53,7 @@ public class KrogerService {
 	
 	public UserResponse findByUserId(String userId) {
 		
-		logger.info("Insdie find by id service");
+		log.info("Insdie find by id service");
 		
 		Optional<User> user=krogerUserRepo.findById(userId);
 		if(!user.isPresent()) {
@@ -70,7 +70,7 @@ public class KrogerService {
 	
 	public UserResponse findByUserType(String userType) {
 		
-		logger.info("Insdie find by Type service");
+		log.info("Insdie find by Type service");
 		
 		List<User> user=krogerUserRepo.findUserByType(userType);
 		if(user.isEmpty()) {
@@ -86,7 +86,7 @@ public class KrogerService {
 	}
 	
 	public UserResponse saveUser(User user) {
-		 logger.info("Inside save user service"); 
+		 log.info("Inside save user service"); 
 		 try{
 			 
 			 krogerUserRepo.save(user);
@@ -105,7 +105,7 @@ public class KrogerService {
 	}
 	  
 	public UserResponse deleteUser(String userId) { 
-		  logger.info("Inside delete by id service");
+		  log.info("Inside delete by id service");
 		  
 			 if(krogerUserRepo.existsById(userId)) {
 				 try {
@@ -114,7 +114,7 @@ public class KrogerService {
 					   userResponse.setStatusMsg(SUCCESSMSG);
 					   userResponse.setResponse("User id : "+userId +" deleted successfully");
 				 	}catch (Exception e) {
-				 			logger.info("Exception Caught is "+ e);
+				 			log.info("Exception Caught is "+ e);
 				 			userResponse.setStatusCode(403);
 				 			userResponse.setStatusMsg("Forbidden");
 				 			userResponse.setResponse("User id : "+userId + " is not deleted due to exception");
@@ -128,7 +128,7 @@ public class KrogerService {
 	}
 	
 	public UserResponse updateUser(String userId,String type) {
-		logger.info("Inside update User type by id");
+		log.info("Inside update User type by id");
 		 if(krogerUserRepo.existsById(userId)) {
 			 try {
 				 krogerUserRepo.updateUserTypeById(type, userId);
@@ -136,7 +136,7 @@ public class KrogerService {
 				 userResponse.setStatusMsg(SUCCESSMSG);
 				 userResponse.setResponse("User id : "+ userId +" Updated successfully");
 			 	}catch (Exception e) {
-			 		logger.info("Exception Caught is "+ e);
+			 		log.info("Exception Caught is "+ e);
 			 		userResponse.setStatusCode(403);
 			 		userResponse.setStatusMsg("Exception occured");
 			 		userResponse.setResponse(new UserNotFoundException("User id : "+userId + " is not updated "));
@@ -151,23 +151,23 @@ public class KrogerService {
 	}
 	
 	public List<ProdByCat> findByCatName(String catName) {
-		logger.info("Inside find by cat name service");
+		log.info("Inside find by cat name service");
 		return  krogerCatRepo.findByCatName(catName);
 	}
 	
 	public ProdByCat findByCatNameAndId(String catName,String catId) {
-		logger.info("Inside find by cat name service");
+		log.info("Inside find by cat name service");
 		return  krogerCatRepo.findByCatNameAndCatId(catName,catId);
 	}
 	
 	public List<Products> findByProdName(String prodName) {
-		logger.info("Inside find by prod name Service");
+		log.info("Inside find by prod name Service");
 		return krogerProdRepo.findByProdName(prodName);
 				
 	}
 	
 	public Products findByProdDesc(String prodDesc){
-		 logger.info("Inside find by price service");
+		 log.info("Inside find by price service");
 		 return krogerProdRepo.findByProdDesc(prodDesc);
 	}
 	

@@ -6,8 +6,9 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.data.cassandra.config.AbstractCassandraConfiguration;
 import org.springframework.data.cassandra.config.CassandraClusterFactoryBean;
-import org.springframework.data.cassandra.core.mapping.CassandraMappingContext;
 import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
+
+import com.datastax.driver.core.Cluster;
 
 @Configuration
 @PropertySource(value = { "classpath:cassandra.properties" })
@@ -31,8 +32,12 @@ public class CassandraConfiguration extends AbstractCassandraConfiguration {
         return environment.getProperty("cassandra.keyspace");
     }
 
+  
+    
     @Bean
-    public CassandraMappingContext cassandraMapping() throws ClassNotFoundException {
-        return new CassandraMappingContext();
+    public Cluster clusters() {
+    	return Cluster.builder().withoutJMXReporting().addContactPoints(environment.getProperty("cassandra.contactpoints")).build();
     }
+    
+    
 }

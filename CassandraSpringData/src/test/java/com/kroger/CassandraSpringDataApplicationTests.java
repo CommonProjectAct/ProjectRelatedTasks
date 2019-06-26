@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.junit.Before;
@@ -81,7 +80,7 @@ public class CassandraSpringDataApplicationTests {
 		assertEquals("Successful",userResponse.getStatusMsg());
 		
 		Optional<User> user=(Optional<User>) userResponse.getResponse();
-		assertEquals("Ajith",user.get().getFirstName());
+		assertEquals("Praveen",user.get().getFirstName());
 		
 		UserResponse userResponseRes =krogerController.findByUserId("U100");
 		

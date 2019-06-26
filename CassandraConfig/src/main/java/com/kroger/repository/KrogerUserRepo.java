@@ -15,6 +15,8 @@ import com.datastax.driver.core.SimpleStatement;
 import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.kroger.model.User;
+import com.kroger.response.UserResponse;
+import com.kroger.util.CassandraConfiguration;
 
 @Repository
 public class KrogerUserRepo  {
@@ -25,74 +27,126 @@ public class KrogerUserRepo  {
 	@Autowired
 	User user;
 	
-	public User getUserDetails(String user_id) {
+	@Autowired
+	UserResponse userResponse;
+	
+	@Autowired
+	CassandraConfiguration cassandraConfiguration;
+	
+	public UserResponse getUserDetails(String userId) {
 		 
-		 Cluster cluster =Cluster.builder().withoutJMXReporting().addContactPoints(environment.getProperty("cassandra.contactpoints")).build();
+	try {
+		 Cluster cluster =cassandraConfiguration.clusters();
 		 Session session = cluster.connect("krogerks_ecom"); 
 		 
-		 RegularStatement toPrepare = (RegularStatement) new SimpleStatement("select * from user where user_id=?").setConsistencyLevel(ConsistencyLevel.QUORUM);
+		 RegularStatement toPrepare = (RegularStatement) new SimpleStatement("select * from user where userid=?").setConsistencyLevel(ConsistencyLevel.ONE);
 		 PreparedStatement prepared = session.prepare(toPrepare);
-		 ResultSet res=session.execute(prepared.bind(user_id));
+		 ResultSet res=session.execute(prepared.bind(userId));
 		
 		 Row row=res.one();
-		 user.setUser_id(row.getString(0));
-		 user.setFirst_name(row.getString(1));
-		 user.setLast_name(row.getString(2));
+		 user.setUserId(row.getString(0));
+		 user.setFirstName(row.getString(1));
+		 user.setLastName(row.getString(2));
 		 user.setType(row.getString(3));
-		 
-		 return user;
+		 userResponse.setStatusCode(0);
+		 userResponse.setStatusMsg("Fetch is Successful");
+		 userResponse.setResponse(user);
+		}catch(Exception e) {
+			userResponse.setStatusCode(404);
+			userResponse.setStatusMsg("Exception Occcured");
+		}
+		
+		 return userResponse;
 	 }
 	
-	public void deleteUserById(String user_id) {
+	public UserResponse deleteUserById(String userId) {
+	try {
+		Cluster cluster =cassandraConfiguration.clusters();
+		Session session = cluster.connect("krogerks_ecom"); 
 		 
-		 Cluster cluster =Cluster.builder().withoutJMXReporting().addContactPoints(environment.getProperty("cassandra.contactpoints")).build();
-		 Session session = cluster.connect("krogerks_ecom"); 
-		 
-		 RegularStatement toPrepare = (RegularStatement) new SimpleStatement("delete from user where user_id=?").setConsistencyLevel(ConsistencyLevel.QUORUM);
+		 RegularStatement toPrepare = (RegularStatement) new SimpleStatement("delete from user where userid=?").setConsistencyLevel(ConsistencyLevel.ONE);
 		 PreparedStatement prepared = session.prepare(toPrepare);
-		 session.execute(prepared.bind(user_id));
-		 
+		 ResultSet res =session.execute(prepared.bind(userId));
+		 if(res.wasApplied()) {
+			 userResponse.setStatusCode(0);
+			 userResponse.setStatusMsg("Deletion is Successful");
+			 userResponse.setResponse("Deleted userd id :"+userId);
+		 }else {
+			 userResponse.setStatusCode(404);
+		 	 userResponse.setStatusMsg("Deleteion in Failed");
+		 }
+		}catch(Exception e) {
+			userResponse.setStatusCode(404);
+			userResponse.setStatusMsg("Exception Occcured");
+		}
+		return userResponse;
 
 	 }
 	
-	public void insertUser(User user) {
+	public UserResponse insertUser(User user) {
+	try {
+		Cluster cluster =cassandraConfiguration.clusters();
+		Session session = cluster.connect("krogerks_ecom"); 
 		 
-		 Cluster cluster =Cluster.builder().withoutJMXReporting().addContactPoints(environment.getProperty("cassandra.contactpoints")).build();
-		 Session session = cluster.connect("krogerks_ecom"); 
-		 
-		 RegularStatement toPrepare = (RegularStatement) new SimpleStatement("insert into user(user_id,first_name,last_name,type) values(?,?,?,?)").setConsistencyLevel(ConsistencyLevel.QUORUM);
+		 RegularStatement toPrepare = (RegularStatement) new SimpleStatement("insert into user(userid,first_name,last_name,type) values(?,?,?,?)").setConsistencyLevel(ConsistencyLevel.ONE);
 		 PreparedStatement prepared = session.prepare(toPrepare);
-		 session.execute(prepared.bind(user.getUser_id(),user.getFirst_name(),user.getLast_name(),user.getType()));
-
+		 ResultSet res =session.execute(prepared.bind(user.getUserId(),user.getFirstName(),user.getLastName(),user.getType()));
+		 if(res.wasApplied()) {
+			 userResponse.setStatusCode(0);
+			 userResponse.setStatusMsg("Insertion is Successful");
+		 }else {
+			 userResponse.setStatusCode(404);
+		 	 userResponse.setStatusMsg("Insertion Failed");
+		 }
+		}catch(Exception e) {
+		userResponse.setStatusCode(404);
+		userResponse.setStatusMsg("Exception Occcured");
+		}
+		return userResponse;
 	 }
 	
-	public void updateUser(String userid,String type ) {
+	public UserResponse updateUser(String userId,String type ) {
 		 
-		 Cluster cluster =Cluster.builder().withoutJMXReporting().addContactPoints(environment.getProperty("cassandra.contactpoints")).build();
-		 Session session = cluster.connect("krogerks_ecom"); 
+		try {
+		Cluster cluster =cassandraConfiguration.clusters(); 
+		Session session = cluster.connect("krogerks_ecom"); 
 		 
-		 RegularStatement toPrepare = (RegularStatement) new SimpleStatement("update user set type=? where user_id=?").setConsistencyLevel(ConsistencyLevel.QUORUM);
+		 RegularStatement toPrepare = (RegularStatement) new SimpleStatement("update user set type=? where userid=?").setConsistencyLevel(ConsistencyLevel.ONE);
 		 PreparedStatement prepared = session.prepare(toPrepare);
-		 session.execute(prepared.bind(type,userid));
-
+		 ResultSet res =session.execute(prepared.bind(type,userId));
+		 if(res.wasApplied()) {
+			 userResponse.setStatusCode(0);
+			 userResponse.setStatusMsg("Update is Successful");
+		 }else {
+			 userResponse.setStatusCode(404);
+		 	 userResponse.setStatusMsg("Update is UnSuccessful");
+		 }
+		 }catch(Exception e) {
+			 userResponse.setStatusCode(404);
+				userResponse.setStatusMsg("Exception Occcured");
+		}
+		return userResponse;
 	 }
 	
-	 public User getCustomerDetails(String user_id) { 
-		 
-		Cluster cluster =Cluster.builder().withoutJMXReporting().addContactPoints(environment.getProperty("cassandra.contactpoints")).build();
+	 public User getCustomerDetails(String userId) { 
+		
+	try {
+		Cluster cluster =cassandraConfiguration.clusters(); 
 		Session session = cluster.connect(); 
 		 
-		 Statement statement=QueryBuilder.select("user_id","first_name","last_name","type").from
-		 ("krogerks_ecom", "user") .where(QueryBuilder.eq("user_id",user_id)); 
+		 Statement statement=QueryBuilder.select("userid","first_name","last_name","type").from
+		 ("krogerks_ecom", "user") .where(QueryBuilder.eq("user_id",userId)); 
 		 
 		 ResultSet rs = session.execute(statement); 
 		 Row row = rs.one();
 		 
-		 user.setUser_id(row.getString("user_id"));
-		 user.setFirst_name(row.getString("first_name"));
-		 user.setLast_name(row.getString("last_name"));
+		 user.setUserId(row.getString("userid"));
+		 user.setFirstName(row.getString("first_name"));
+		 user.setLastName(row.getString("last_name"));
 		 user.setType(row.getString("type"));
-		 
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 		 return user;
 	  } 
 	  
