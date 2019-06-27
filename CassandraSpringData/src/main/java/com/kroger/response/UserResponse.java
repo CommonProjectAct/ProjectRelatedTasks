@@ -1,6 +1,5 @@
 package com.kroger.response;
 
-
 import org.springframework.stereotype.Component;
 
 @Component
