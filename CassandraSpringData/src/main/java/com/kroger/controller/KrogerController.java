@@ -1,6 +1,7 @@
 package com.kroger.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kroger.exception.KrogApplicationException;
+import com.kroger.exceptions.UserNotFoundException;
 import com.kroger.model.ProdByCat;
 import com.kroger.model.Products;
 import com.kroger.model.User;
@@ -21,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Slf4j
-public class KrogerController {
+public class KrogerController extends KrogerBaseController{
 	
 	
 	 
@@ -29,16 +32,14 @@ public class KrogerController {
 	KrogerService krogerService;
 	
 	@GetMapping("/findalluser")
-	public UserResponse findAllUser() {
+	public List<User> findAllUser() {
 		
 		log.info("Inside of find all service");
 		return krogerService.findAllUser();
 	}
 	
 	@GetMapping("/finduserbyid/{userId}")
-	public UserResponse findByUserId(@PathVariable("userId") String userId) {
-		
-		log.info("Insdie find by id service");
+	public User findByUserId(@PathVariable("userId") String userId) throws com.kroger.exception.UserNotFoundException  {
 		return krogerService.findByUserId(userId);
 	}
 	

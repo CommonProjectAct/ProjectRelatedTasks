@@ -79,6 +79,22 @@
 			<scope>test</scope>
 		</dependency>
 		
+			<dependency>
+			<groupId>com.kroger.dev</groupId>
+			<artifactId>CommonLibraryKroager</artifactId>
+			<version>0.0.0.01</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-log4j12</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
 		<dependency>
     		<groupId>org.projectlombok</groupId>
     		<artifactId>lombok</artifactId>
